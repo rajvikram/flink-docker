@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-export SOURCE_VARIANTS=(ubuntu )
+export SOURCE_VARIANTS=(ubuntu alpine )
 
 export DEFAULT_SCALA="2.12"
 export DEFAULT_JAVA="11"
@@ -15,7 +15,18 @@ function generateDockerfile {
     java_version=$6
     source_variant=$7
 
-    from_docker_image="eclipse-temurin:${java_version}-jre-jammy"
+    case "$source_variant" in
+      ubuntu)
+        from_docker_image="eclipse-temurin:${java_version}-jre-jammy"
+        ;;
+      alpine)
+        from_docker_image="eclipse-temurin:${java_version}-jre-alpine"
+        ;;
+      *)
+        echo "unrecognized source variant: " $source_variant
+        exit 1
+        ;;
+    esac
 
     cp docker-entrypoint.sh "$dir/docker-entrypoint.sh"
 
